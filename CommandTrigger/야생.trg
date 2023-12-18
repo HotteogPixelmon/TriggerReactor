@@ -1,0 +1,1 @@
+#CMDOP "spreadplayers ~ ~ 0 10000 false @p"
