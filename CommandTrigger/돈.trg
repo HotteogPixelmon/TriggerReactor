@@ -1,25 +1,73 @@
-IMPORT java.lang.String
+import java.text.DecimalFormat
 IMPORT java.lang.Integer
 
 IF {"player."+player.getName() + ".money"} == null
-{"player."+player.getName() + ".money"} = 0
+    {"player."+player.getName() + ".money"} = 0
 ENDIF
 
+money = {"player." + player.getName() + ".money"}
+formatter = new DecimalFormat("###,###");
 
-// /돈 보기 /돈 보내기 /돈 랭킹
-IF args.length == 0
-    #MESSAGE "-------------------"
-    #MESSAGE "/돈 보기"
-    #MESSAGE "/돈 송금"
-    #MESSAGE "/돈 랭킹"
-    #MESSAGE "-------------------"
+IF args.length == 1
 
+    IF args[0] == "보기"
+        #MESSAGE "&6[돈]&b "+player.getName()+"&f님은 현재 &e"+ formatter.format(money)  + "원&f을 보유 중입니다."
+        #STOP
+    ENDIF
 
+    IF args[0] == "랭킹"
 
+        // init player list
+        players = {"player"}
+        players = players.keySet()
 
+        // remove unregistered players
+        FOR p = players.iterator();
+            IF {"player."+ p + ".money"} == null
+                players.remove(p)
+            ENDIF
+        ENDFOR
+        
+        // sort
+        topArr = array(5)
+        FOR i = 0:5
+            maxPlayer = ""
+            FOR p = players.iterator()
+                IF maxPlayer.isEmpty()
+                IF {"player."+playerArr[j]+".money"} < {"player."+playerArr[j+1]+".money"}
+                    
+
+                ENDIF
+            ENDFOR
+        ENDFOR
+
+        // getTotal Money
+        total = 0
+        FOR i = 0 : playerArr.length
+            total += {"player."+playerArr[i]+".money"}
+        ENDFOR
+
+        #MESSAGE "&e------- [&6 부자 Top 5 &e] ----------"
+        FOR i = 0:5
+            targetMoney = {"player."+playerArr[i]+".money"}
+            targetRatio = round(toDouble(targetMoney) / toDouble(total) * 100, 1)
+            #MESSAGE "&6Top "+(i+1)+" &b"+playerArr[i]+" &f: &e"+ formatter.format(targetMoney) +"원 &7- "+ targetRatio +"%"
+        ENDFOR
+        #MESSAGE "&e-----------------------------"
+        #STOP
+    ENDIF
+
+ENDIF
+
+IF args.length >= 1 &&
+    IF args.length <= 2
+        #MESSAGE "&6[돈]&f 사용법 : /돈 송금 <playername> <보낼 돈>"
+        #STOP
+    ENDIF
+ENDIF
 
 ELSEIF args[0] == "보기"
-    #MESSAGE "&6[돈]&b "+player.getName()+"&f님은 현재 &e"+ String.format("%,d", {"player."+player.getName() + ".money"})  + "원&f을 보유 중입니다."
+    #MESSAGE "&6[돈]&b "+player.getName()+"&f님은 현재 &e"+ String.format("%,d", money)  + "원&f을 보유 중입니다."
 
 ELSEIF args[0] == "송금"
     IF args.length <= 2
@@ -103,3 +151,9 @@ ELSE
     #MESSAGE "/돈 랭킹"
     #MESSAGE "-------------------"
 ENDIF
+
+#MESSAGE "-------------------"
+#MESSAGE "/돈 보기"
+#MESSAGE "/돈 송금"
+#MESSAGE "/돈 랭킹"
+#MESSAGE "-------------------"
