@@ -1,0 +1,3 @@
+IF trigger == "open"
+    
+ENDIF
