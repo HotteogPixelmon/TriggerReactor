@@ -2,11 +2,8 @@ import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.BattleStatsType;
 import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
 
-import io.github.wysohn.gsoncopy.Gson
-
-gson = Gson()
-
 pokeSize = 2
+movePerArr = array(pokeSize)
 movePerArr = array(pokeSize)
 
 FOR i = 0:pokeSize
