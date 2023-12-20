@@ -15,7 +15,7 @@ rand = Random()
 pickUpRandomSpec = LAMBDA =>
 
     spec = PixelmonSpecies.getRandomSpecies(true, true, false)
-    IF rand.nextDouble() < 0.3
+    IF rand.nextDouble() < 0.2
         spec = PixelmonSpecies.getRandomLegendary(true)
         IF rand.nextDouble() < 0.3
             spec = PixelmonSpecies.getRandomMythical()
@@ -48,6 +48,6 @@ FOR i = 0:pokeSize
     {pokePath + ".form"} = formName
     {pokePath + ".isShiny"} = isShiny
     {pokePath + ".iv"} = arrayOf(rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31))
-    {pokePath + ".level"} = rand.nextInt(100)+1
+    {pokePath + ".level"} = Math.min(Math.max(rand.nextGaussian() * 15 + 50, 1), 100)
     {pokePath + ".status"} = Math.min(Math.max(rand.nextGaussian() / 8.0 + 0.5, 0), 1)
 ENDFOR
