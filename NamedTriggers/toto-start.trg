@@ -2,12 +2,15 @@ import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.BattleStatsType;
 import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
 
+import io.github.wysohn.gsoncopy.Gson
+
+gson = Gson()
+
 pokeSize = 2
 movePerArr = array(pokeSize)
 
 FOR i = 0:pokeSize
     path = "toto.pokemon."+i
-    {?path+".len"} = 0
 
     // 포켓몬 종족을 구함.
     species = PixelmonSpecies.fromName({path+".spec"}).getValueUnsafe()
@@ -60,9 +63,11 @@ runParams = list()
 FOR p = movePerArr
     param = map()
     param.put("probability", p)
+    param.put("distance", 0)
 
     // if you want, add any params for new function.
     param.put("groggy", false)
+    param.put("groggy_time", 0)
 
     runParams.add(param)
 ENDFOR
@@ -72,25 +77,19 @@ events = list() // params = runParams | retrun modified probability
 
 // for Example. its Groggy event method
 events.add(LAMBDA params => 
-    FOR o = 0:params.size()
 
-        option = params.get(o)
-        groggy = option.get("groggy")
-        #MESSAGE o+", "+groggy
+    groggy = params.get("groggy")
 
-        IF !groggy && random(1.0) < 0.05 * {?"toto.pokemon."+i+".len"} * speed
-            option.put("groggy", true)
-            option.put("probability", 0)
-            #MESSAGE "Groggied!"
-        ELSEIF groggy && random(1.0) < 0.1 * speed
-            option.put("groggy", false)
-            option.put("probability", movePerArr[i])
-            #MESSAGE "Groggy was disabled"
-        ENDIF
-
-        params.set(o, option)
-        
-    ENDFOR
+    IF !groggy && random(1.0) < 0.005 * (params.get("distance") * 1.25) * speed
+        params.put("groggy", true)
+        params.put("probability", 0)
+    ELSEIF groggy && random(1.0) < 0.005 * (params.get("groggy_time") * 0.5) * speed
+        params.put("groggy", false)
+        params.put("groggy_time", 0)
+        params.put("probability", movePerArr[i])
+    ELSEIF groggy
+        params.put("groggy_time", params.get("groggy_time") + 1)
+    ENDIF
 
     params
 ENDLAMBDA)
@@ -98,27 +97,43 @@ ENDLAMBDA)
 WHILE !goal
 
     // event Listener
-    FOR e = events
-        runParams = e.run(runParams)
+    FOR i = 0:pokeSize
+
+        FOR e = events
+            runParams.set(i, e.run(runParams.get(i)))
+        ENDFOR
+
     ENDFOR
 
     // 확률에 따른 전진 여부 판별
     FOR i = 0:pokeSize
-        IF random(1.0) < runParams.get(i).get("probability") * speed
-            {?"toto.pokemon."+i+".len"} += 1
-            #MESSAGE {?"toto.pokemon.0.len"} +" Vs " + {?"toto.pokemon.1.len"}
+        option = runParams.get(i)
+
+        IF random(1.0) < option.get("probability") * speed
+            option.put("distance", option.get("distance") + 1)
+            #MESSAGE runParams.get(0).get("distance") +" Vs " + runParams.get(1).get("distance")
         ENDIF
+
+        runParams.set(i, option)
     ENDFOR
 
     // 동시에 들어갔다면 리스트에 담고 나중에 랜덤으로 뽑기.
     FOR i = 0:pokeSize
-        IF {?"toto.pokemon."+i+".len"} > 7
+        option = runParams.get(i)
+
+        IF option.get("distance") > 7
             goal = true
             goalList.add(i)
         ENDIF
     ENDFOR
 
+    // 전역변수에 현재 게임 상태 업데이트.
+    {"toto.pokemon.runtime.params"} = gson.toJson(runParams)
+
     #WAIT 0.1 // repeat delay
+    IF {"test.stop"}
+        #STOP
+    ENDIF
 ENDWHILE
 
 goalIndex = goalList.get(random(goalList.size()))
