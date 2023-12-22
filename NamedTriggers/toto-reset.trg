@@ -7,9 +7,6 @@ import com.pixelmonmod.pixelmon.api.pokemon.PokemonBuilder;
 pokeSize = 2
 {"toto.time"} = 3600
 
-primaryPath = "toto.frimary"
-secondaryPath = "toto.secondary"
-
 rand = Random()
 
 pickUpRandomSpec = LAMBDA =>
@@ -44,10 +41,15 @@ FOR i = 0:pokeSize
 
     pokePath = "toto.pokemon." + i
 
+    {pokePath} = null // init
+
     {pokePath + ".spec"} = species.getName()
     {pokePath + ".form"} = formName
     {pokePath + ".isShiny"} = isShiny
     {pokePath + ".iv"} = arrayOf(rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31), rand.nextInt(31))
     {pokePath + ".level"} = Math.min(Math.max(rand.nextGaussian() * 15 + 50, 1), 100)
     {pokePath + ".status"} = Math.min(Math.max(rand.nextGaussian() / 8.0 + 0.5, 0), 1)
+
+    // Default moneys
+    {pokePath + ".betted.System"} = 50000
 ENDFOR
