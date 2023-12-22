@@ -26,16 +26,17 @@ import java.util.Map
 globalVar_putMap = LAMBDA rootPath, map, isTemp =>
     SYNC
 
-        FOR entry = map.entrySet()
-            currentPath = rootPath + "." + entry.getKey()
+        FOR key = map.keySet()
+            currentPath = rootPath + "." + key
+            value = map.get(key)
             
-            IF entry.getValue() IS Map
-                globalVar_putMap(currentPath, entry.getValue(), isTemp)
+            IF value IS Map
+                globalVar_putMap(currentPath, value, isTemp)
             ELSE
                 IF isTemp
-                    {?currentPath} = entry.getValue()
+                    {?currentPath} = value
                 ELSE
-                    {currentPath} = entry.getValue()
+                    {currentPath} = value
                 ENDIF
             ENDIF
         ENDFOR
